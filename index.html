@@ -5,8 +5,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Monitor PVD 112</title>
     <script src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;800&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
     
     <style>
+        :root {
+            --color-bg: #0A0E14;
+            --color-surface: #1A1F2E;
+            --color-border: #2A3142;
+            --color-accent: #FF3B30;
+            --color-warning: #FF9500;
+            --color-success: #34C759;
+            --color-text: #E8EAED;
+            --color-text-dim: #8B92A5;
+        }
+
         * { 
             margin: 0; 
             padding: 0; 
@@ -14,205 +28,320 @@
         }
         
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
-            color: #fff;
+            font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--color-bg);
+            color: var(--color-text);
             overflow-x: hidden;
             padding: 0;
             min-height: 100vh;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                repeating-linear-gradient(
+                    0deg,
+                    rgba(255, 59, 48, 0.03) 0px,
+                    transparent 1px,
+                    transparent 2px,
+                    rgba(255, 59, 48, 0.03) 3px
+                );
+            pointer-events: none;
+            z-index: 1;
         }
         
         .container { 
-            padding: 24px; 
+            padding: 20px; 
             max-width: 100%; 
+            position: relative;
+            z-index: 2;
         }
         
         .header { 
-            text-align: center; 
-            margin-bottom: 32px; 
-            padding-bottom: 20px;
-            border-bottom: 2px solid rgba(255,255,255,0.1);
+            text-align: left;
+            margin-bottom: 24px; 
+            padding: 16px 20px;
+            background: var(--color-surface);
+            border: 2px solid var(--color-border);
+            border-left: 4px solid var(--color-accent);
+            position: relative;
+            animation: slideIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+
+        @keyframes flash {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
         }
         
         .header h1 { 
-            font-size: 26px; 
-            font-weight: 700;
-            margin-bottom: 8px; 
-            letter-spacing: -0.5px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 18px; 
+            font-weight: 800;
+            margin-bottom: 4px; 
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--color-accent);
+            text-shadow: 0 0 20px rgba(255, 59, 48, 0.5);
         }
         
         .subtitle { 
-            font-size: 13px; 
-            opacity: 0.7; 
+            font-size: 11px; 
+            color: var(--color-text-dim);
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 3px;
             font-weight: 500;
+        }
+
+        .status-indicator {
+            position: absolute;
+            top: 16px;
+            right: 20px;
+            width: 10px;
+            height: 10px;
+            background: var(--color-success);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+            box-shadow: 0 0 10px var(--color-success);
         }
         
         .reloj-container {
-            background: rgba(255,255,255,0.05);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 16px;
-            padding: 28px 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            background: var(--color-surface);
+            border: 2px solid var(--color-border);
+            padding: 32px 20px;
+            margin-bottom: 16px;
+            position: relative;
+            overflow: hidden;
+            animation: slideIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.1s backwards;
+        }
+
+        .reloj-container::before {
+            content: 'SYSTEM TIME';
+            position: absolute;
+            top: 8px;
+            left: 12px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            color: var(--color-text-dim);
+        }
+
+        .reloj-container::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--color-accent), transparent);
         }
         
         .reloj {
-            font-size: 48px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 56px;
             font-weight: 800;
             text-align: center;
-            color: #fff;
-            font-family: 'SF Mono', 'Monaco', 'Courier New', monospace;
-            letter-spacing: 2px;
-            text-shadow: 0 2px 20px rgba(102, 126, 234, 0.5);
+            color: var(--color-text);
+            letter-spacing: 4px;
+            text-shadow: 0 0 30px rgba(255, 59, 48, 0.3);
+            font-variant-numeric: tabular-nums;
         }
         
         .estado {
-            background: rgba(255,255,255,0.08);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255,255,255,0.15);
-            border-radius: 12px;
-            padding: 20px;
+            background: var(--color-surface);
+            border: 2px solid var(--color-border);
+            padding: 24px 20px;
             margin-bottom: 16px;
             text-align: center;
             font-size: 16px;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
-            overflow: hidden;
+            transition: all 0.3s ease;
+            animation: slideIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s backwards;
         }
-        
+
         .estado::before {
             content: '';
             position: absolute;
             top: 0;
             left: 0;
             right: 0;
-            bottom: 0;
-            background: linear-gradient(135deg, transparent, rgba(255,255,255,0.05));
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-        
-        .estado:hover::before {
-            opacity: 1;
+            height: 3px;
+            background: var(--estado-color, var(--color-border));
+            transition: all 0.3s ease;
         }
         
         .estado.activo { 
-            background: linear-gradient(135deg, #ff6b6b, #ee5a6f);
-            border-color: rgba(255,255,255,0.3);
-            animation: pulse 2s ease-in-out infinite;
-            box-shadow: 0 8px 32px rgba(255, 107, 107, 0.4);
+            --estado-color: var(--color-accent);
+            border-color: var(--color-accent);
+            background: linear-gradient(180deg, rgba(255, 59, 48, 0.1), var(--color-surface));
+        }
+
+        .estado.activo .status-led {
+            animation: flash 1s infinite;
         }
         
         .estado.descanso { 
-            background: linear-gradient(135deg, #feca57, #ff9ff3);
-            border-color: rgba(255,255,255,0.3);
-            box-shadow: 0 8px 32px rgba(254, 202, 87, 0.3);
+            --estado-color: var(--color-warning);
+            border-color: var(--color-warning);
+            background: linear-gradient(180deg, rgba(255, 149, 0, 0.1), var(--color-surface));
         }
         
         .estado.operativo { 
-            background: linear-gradient(135deg, #48dbfb, #0abde3);
-            border-color: rgba(255,255,255,0.3);
-            box-shadow: 0 8px 32px rgba(72, 219, 251, 0.3);
+            --estado-color: var(--color-success);
+            border-color: var(--color-success);
+            background: linear-gradient(180deg, rgba(52, 199, 89, 0.1), var(--color-surface));
         }
         
         #estado-icono { 
-            font-size: 36px; 
+            font-size: 32px; 
             display: block; 
             margin-bottom: 12px;
-            filter: drop-shadow(0 2px 8px rgba(0,0,0,0.3));
+            filter: drop-shadow(0 0 10px currentColor);
         }
         
         #estado-texto { 
-            font-weight: 700;
-            font-size: 18px;
-            text-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 800;
+            font-size: 16px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .status-led {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--estado-color);
+            margin-right: 8px;
+            box-shadow: 0 0 10px var(--estado-color);
         }
         
         .info {
-            background: rgba(255,255,255,0.06);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 10px;
-            padding: 16px;
-            margin-bottom: 20px;
-            font-size: 14px;
-            text-align: center;
-            min-height: 50px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            line-height: 1.5;
+            background: var(--color-surface);
+            border: 2px solid var(--color-border);
+            border-left: 3px solid var(--color-warning);
+            padding: 16px 20px;
+            margin-bottom: 16px;
+            font-size: 13px;
+            line-height: 1.6;
+            font-family: 'JetBrains Mono', monospace;
+            animation: slideIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.3s backwards;
+        }
+
+        .info::before {
+            content: '› ';
+            color: var(--color-warning);
+            font-weight: 700;
         }
         
         .btn-update {
             width: 100%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
+            background: var(--color-surface);
+            color: var(--color-text);
+            border: 2px solid var(--color-accent);
             padding: 16px;
-            font-size: 15px;
-            font-weight: 600;
-            border-radius: 10px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            font-weight: 700;
             cursor: pointer;
-            box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.2s ease;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            letter-spacing: 2px;
+            position: relative;
+            overflow: hidden;
+            animation: slideIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.4s backwards;
+        }
+
+        .btn-update::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: var(--color-accent);
+            transition: left 0.3s ease;
+            z-index: -1;
         }
         
+        .btn-update:hover::before {
+            left: 0;
+        }
+
         .btn-update:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 30px rgba(102, 126, 234, 0.6);
+            color: white;
+            border-color: var(--color-accent);
         }
         
         .btn-update:active { 
-            transform: translateY(0); 
-            box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4);
+            transform: scale(0.98);
         }
         
         .footer { 
             text-align: center; 
-            margin-top: 24px; 
-            color: rgba(255,255,255,0.5);
-            font-size: 12px;
-        }
-        
-        @keyframes pulse {
-            0%, 100% { 
-                opacity: 1; 
-                transform: scale(1); 
-            }
-            50% { 
-                opacity: 0.95; 
-                transform: scale(1.02); 
-            }
+            margin-top: 20px; 
+            color: var(--color-text-dim);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
         }
 
         .status-badge {
             display: inline-block;
-            padding: 4px 12px;
-            border-radius: 20px;
-            background: rgba(255,255,255,0.2);
-            font-size: 11px;
-            font-weight: 600;
+            padding: 4px 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            font-weight: 700;
             margin-top: 8px;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            letter-spacing: 1px;
+        }
+
+        .grid-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                linear-gradient(rgba(42, 49, 66, 0.3) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(42, 49, 66, 0.3) 1px, transparent 1px);
+            background-size: 20px 20px;
+            pointer-events: none;
+            z-index: 0;
         }
     </style>
 </head>
 <body>
+    <div class="grid-bg"></div>
+    
     <div class="container">
         <div class="header">
-            <h1>🚨 Monitor PVD</h1>
+            <h1>⚡ MONITOR PVD</h1>
             <p class="subtitle">112 Illes Balears</p>
+            <div class="status-indicator"></div>
         </div>
         
         <div class="reloj-container">
@@ -221,34 +350,37 @@
         
         <div id="estado" class="estado">
             <span id="estado-icono">⏳</span>
-            <span id="estado-texto">Iniciando...</span>
+            <div>
+                <span class="status-led"></span>
+                <span id="estado-texto">INICIANDO...</span>
+            </div>
         </div>
         
         <div class="info">
-            <div id="info-tiempo">Cargando datos...</div>
+            <div id="info-tiempo">CARGANDO DATOS DEL SISTEMA...</div>
         </div>
         
         <button id="force-update" class="btn-update">
-            🔄 Actualizar Ahora
+            ⟳ ACTUALIZAR AHORA
         </button>
         
         <div class="footer">
-            <small>Actualización automática cada 5s</small>
+            <small>SYNC: 5 SEG • MODO: AUTOMATICO</small>
         </div>
     </div>
     
     <script>
         Office.onReady((info) => {
           if (info.host === Office.HostType.Excel) {
-            console.log("✅ Add-in cargado correctamente");
+            console.log("✅ Sistema PVD iniciado");
             
             document.getElementById("force-update").onclick = () => {
-              console.log("🔄 Actualización manual");
+              console.log("🔄 Sincronización manual");
               actualizarPVD();
             };
 
             actualizarPVD();
-            setInterval(() => { actualizarPVD(); }, 5000); // ✅ CADA 5 SEGUNDOS
+            setInterval(() => { actualizarPVD(); }, 5000);
           }
         });
 
@@ -273,7 +405,6 @@
               
               document.getElementById("reloj").textContent = horaFormato;
 
-              // ✅ ESCRIBIR HORA EN F12: Tamaño 14, Color #808080
               cellaHora.values = [[horaFormato]];
               cellaHora.format.font.size = 14;
               cellaHora.format.font.bold = false;
@@ -338,31 +469,31 @@
 
               if (pvdActivo !== null) {
                 estadoIcono.textContent = "🔴";
-                estadoTexto.innerHTML = `PVD EN CURSO<br><span class="status-badge">${pvdActivo} min restantes</span>`;
+                estadoTexto.innerHTML = `PVD ACTIVO<br><span class="status-badge">T-${pvdActivo} MIN</span>`;
                 estadoDiv.className = "estado activo";
-                infoDiv.textContent = `El descanso PVD finalizará en ${pvdActivo} minutos`;
+                infoDiv.textContent = `DESCANSO PVD FINALIZA EN ${pvdActivo} MINUTOS`;
               } else if (descansoActivo !== null) {
                 estadoIcono.textContent = "🟠";
-                estadoTexto.innerHTML = `DESCANSO EN CURSO<br><span class="status-badge">${descansoActivo} min restantes</span>`;
+                estadoTexto.innerHTML = `DESCANSO ACTIVO<br><span class="status-badge">T-${descansoActivo} MIN</span>`;
                 estadoDiv.className = "estado descanso";
-                infoDiv.textContent = `El periodo de descanso finalizará en ${descansoActivo} minutos`;
+                infoDiv.textContent = `PERIODO DE DESCANSO FINALIZA EN ${descansoActivo} MINUTOS`;
               } else {
                 estadoIcono.textContent = "✅";
-                estadoTexto.innerHTML = `OPERATIVO<br><span class="status-badge">Sin descansos activos</span>`;
+                estadoTexto.innerHTML = `OPERATIVO<br><span class="status-badge">DISPONIBLE</span>`;
                 estadoDiv.className = "estado operativo";
                 if (siguientePVD) {
-                  infoDiv.textContent = `Próximo PVD: ${siguientePVD} (en ${minParaSiguiente} min)`;
+                  infoDiv.textContent = `PROXIMO PVD: ${siguientePVD} [T+${minParaSiguiente} MIN]`;
                 } else {
-                  infoDiv.textContent = "No hay más turnos programados para hoy";
+                  infoDiv.textContent = `SIN TURNOS PROGRAMADOS`;
                 }
               }
 
-              console.log("✅ Actualización completada:", new Date().toLocaleTimeString());
+              console.log("✅ Sincronización completada:", new Date().toLocaleTimeString());
             });
           } catch (error) {
-            console.error("❌ Error:", error);
-            document.getElementById("estado-texto").textContent = "ERROR";
-            document.getElementById("info-tiempo").textContent = error.message;
+            console.error("❌ ERROR DE SISTEMA:", error);
+            document.getElementById("estado-texto").textContent = "ERROR DE CONEXION";
+            document.getElementById("info-tiempo").textContent = error.message.toUpperCase();
           }
         }
     </script>
