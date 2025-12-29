@@ -280,6 +280,17 @@
             letter-spacing: 1px;
         }
 
+        .sheet-indicator {
+            background: var(--color-surface);
+            border: 1px solid var(--color-border);
+            padding: 6px 12px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9px;
+            text-align: center;
+            color: var(--color-text-dim);
+            letter-spacing: 1px;
+        }
+
         .grid-bg {
             position: fixed;
             top: 0;
@@ -299,6 +310,8 @@
     <div class="grid-bg"></div>
     
     <div class="container">
+        <div class="sheet-indicator" id="sheet-info">CARGANDO...</div>
+        
         <div class="reloj-container">
             <div id="reloj" class="reloj">--:--:--</div>
         </div>
@@ -335,19 +348,25 @@
             };
 
             actualizarPVD();
-            setInterval(() => { actualizarPVD(); }, 2000); // ✅ CADA 2 SEGUNDOS
+            setInterval(() => { actualizarPVD(); }, 2000);
           }
         });
 
         async function actualizarPVD() {
           try {
             await Excel.run(async (context) => {
-              const sheet = context.workbook.worksheets.getActiveWorksheet();
-              const range = sheet.getRange("C4:J10");
-              const cellaHora = sheet.getRange("F12");
+              // ✅ OBTENER LAS 3 HOJAS
+              const sheetMañana = context.workbook.worksheets.getItem("MAÑANA");
+              const sheetTarde = context.workbook.worksheets.getItem("TARDE");
+              const sheetNoche = context.workbook.worksheets.getItem("NOCHE");
               
-              range.load("values");
+              const activeSheet = context.workbook.worksheets.getActiveWorksheet();
+              activeSheet.load("name");
+              
               await context.sync();
+
+              // Mostrar qué hoja está activa
+              document.getElementById("sheet-info").textContent = `HOJA ACTIVA: ${activeSheet.name.toUpperCase()}`;
 
               const highlightColor = "#FFC7CE";
               const now = new Date();
@@ -360,90 +379,119 @@
               
               document.getElementById("reloj").textContent = horaFormato;
 
-              cellaHora.values = [[horaFormato]];
-              cellaHora.format.font.size = 14;
-              cellaHora.format.font.bold = false;
-              cellaHora.format.font.color = "#808080";
-              cellaHora.format.horizontalAlignment = "Center";
+              // ✅ FUNCIÓN PARA PROCESAR CADA HOJA
+              async function procesarHoja(sheet) {
+                const range = sheet.getRange("C4:J10");
+                const cellaHora = sheet.getRange("F12");
+                
+                range.load("values");
+                await context.sync();
 
-              range.format.fill.clear();
+                // Escribir hora en F12
+                cellaHora.values = [[horaFormato]];
+                cellaHora.format.font.size = 14;
+                cellaHora.format.font.bold = false;
+                cellaHora.format.font.color = "#808080";
+                cellaHora.format.horizontalAlignment = "Center";
 
-              let pvdActivo = null;
-              let descansoActivo = null;
-              let siguientePVD = null;
-              let minParaSiguiente = 9999;
+                // Limpiar formato
+                range.format.fill.clear();
 
-              for (let r = 0; r < range.values.length; r++) {
-                for (let c = 0; c < range.values[r].length; c++) {
-                  const cellValue = range.values[r][c];
-                  if (!cellValue) continue;
+                let pvdActivo = null;
+                let descansoActivo = null;
+                let siguientePVD = null;
+                let minParaSiguiente = 9999;
 
-                  let shouldHighlight = false;
+                // Procesar celdas
+                for (let r = 0; r < range.values.length; r++) {
+                  for (let c = 0; c < range.values[r].length; c++) {
+                    const cellValue = range.values[r][c];
+                    if (!cellValue) continue;
 
-                  if (typeof cellValue === "number") {
-                    const startMinutes = Math.round(cellValue * 1440);
-                    const endMinutes = startMinutes + 10;
+                    let shouldHighlight = false;
 
-                    const diffMin = startMinutes - nowMinutes;
-                    if (diffMin > 0 && diffMin < minParaSiguiente) {
-                      minParaSiguiente = diffMin;
-                      const hPVD = Math.floor(startMinutes / 60);
-                      const mPVD = startMinutes % 60;
-                      siguientePVD = `${hPVD}:${mPVD < 10 ? '0' : ''}${mPVD}`;
-                    }
+                    if (typeof cellValue === "number") {
+                      const startMinutes = Math.round(cellValue * 1440);
+                      const endMinutes = startMinutes + 10;
 
-                    if (nowMinutes >= startMinutes && nowMinutes < endMinutes) {
-                      shouldHighlight = true;
-                      pvdActivo = endMinutes - nowMinutes;
-                    }
-                  } else if (typeof cellValue === "string") {
-                    const match = cellValue.trim().match(/(\d{1,2}):(\d{2})\s*[-–]\s*(\d{1,2}):(\d{2})/);
-                    if (match) {
-                      const start = parseInt(match[1]) * 60 + parseInt(match[2]);
-                      const end = parseInt(match[3]) * 60 + parseInt(match[4]);
+                      const diffMin = startMinutes - nowMinutes;
+                      if (diffMin > 0 && diffMin < minParaSiguiente) {
+                        minParaSiguiente = diffMin;
+                        const hPVD = Math.floor(startMinutes / 60);
+                        const mPVD = startMinutes % 60;
+                        siguientePVD = `${hPVD}:${mPVD < 10 ? '0' : ''}${mPVD}`;
+                      }
 
-                      if (nowMinutes >= start && nowMinutes < end) {
+                      if (nowMinutes >= startMinutes && nowMinutes < endMinutes) {
                         shouldHighlight = true;
-                        descansoActivo = end - nowMinutes;
+                        pvdActivo = endMinutes - nowMinutes;
+                      }
+                    } else if (typeof cellValue === "string") {
+                      const match = cellValue.trim().match(/(\d{1,2}):(\d{2})\s*[-–]\s*(\d{1,2}):(\d{2})/);
+                      if (match) {
+                        const start = parseInt(match[1]) * 60 + parseInt(match[2]);
+                        const end = parseInt(match[3]) * 60 + parseInt(match[4]);
+
+                        if (nowMinutes >= start && nowMinutes < end) {
+                          shouldHighlight = true;
+                          descansoActivo = end - nowMinutes;
+                        }
                       }
                     }
-                  }
 
-                  if (shouldHighlight) {
-                    range.getCell(r, c).format.fill.color = highlightColor;
+                    if (shouldHighlight) {
+                      range.getCell(r, c).format.fill.color = highlightColor;
+                    }
                   }
                 }
+
+                return { pvdActivo, descansoActivo, siguientePVD, minParaSiguiente };
               }
 
+              // ✅ PROCESAR LAS 3 HOJAS
+              const resultMañana = await procesarHoja(sheetMañana);
+              const resultTarde = await procesarHoja(sheetTarde);
+              const resultNoche = await procesarHoja(sheetNoche);
+
               await context.sync();
+
+              // ✅ MOSTRAR ESTADO DE LA HOJA ACTIVA
+              let resultado;
+              if (activeSheet.name.toUpperCase() === "MAÑANA") {
+                resultado = resultMañana;
+              } else if (activeSheet.name.toUpperCase() === "TARDE") {
+                resultado = resultTarde;
+              } else if (activeSheet.name.toUpperCase() === "NOCHE") {
+                resultado = resultNoche;
+              }
 
               const estadoDiv = document.getElementById("estado");
               const estadoIcono = document.getElementById("estado-icono");
               const estadoTexto = document.getElementById("estado-texto");
               const infoDiv = document.getElementById("info-tiempo");
 
-              if (pvdActivo !== null) {
+              if (resultado.pvdActivo !== null) {
                 estadoIcono.textContent = "🔴";
-                estadoTexto.innerHTML = `PVD ACTIVO<br><span class="status-badge">T-${pvdActivo} MIN</span>`;
+                estadoTexto.innerHTML = `PVD ACTIVO<br><span class="status-badge">T-${resultado.pvdActivo} MIN</span>`;
                 estadoDiv.className = "estado activo";
-                infoDiv.textContent = `DESCANSO PVD FINALIZA EN ${pvdActivo} MINUTOS`;
-              } else if (descansoActivo !== null) {
+                infoDiv.textContent = `DESCANSO PVD FINALIZA EN ${resultado.pvdActivo} MINUTOS`;
+              } else if (resultado.descansoActivo !== null) {
                 estadoIcono.textContent = "🟠";
-                estadoTexto.innerHTML = `DESCANSO ACTIVO<br><span class="status-badge">T-${descansoActivo} MIN</span>`;
+                estadoTexto.innerHTML = `DESCANSO ACTIVO<br><span class="status-badge">T-${resultado.descansoActivo} MIN</span>`;
                 estadoDiv.className = "estado descanso";
-                infoDiv.textContent = `PERIODO DE DESCANSO FINALIZA EN ${descansoActivo} MINUTOS`;
+                infoDiv.textContent = `PERIODO DE DESCANSO FINALIZA EN ${resultado.descansoActivo} MINUTOS`;
               } else {
                 estadoIcono.textContent = "✅";
                 estadoTexto.innerHTML = `OPERATIVO<br><span class="status-badge">DISPONIBLE</span>`;
                 estadoDiv.className = "estado operativo";
-                if (siguientePVD) {
-                  infoDiv.textContent = `PROXIMO PVD: ${siguientePVD} [T+${minParaSiguiente} MIN]`;
+                if (resultado.siguientePVD) {
+                  infoDiv.textContent = `PROXIMO PVD: ${resultado.siguientePVD} [T+${resultado.minParaSiguiente} MIN]`;
                 } else {
                   infoDiv.textContent = `SIN TURNOS PROGRAMADOS`;
                 }
               }
 
-              console.log("✅ Sincronización completada:", new Date().toLocaleTimeString());
+              console.log("✅ 3 hojas sincronizadas:", new Date().toLocaleTimeString());
             });
           } catch (error) {
             console.error("❌ ERROR DE SISTEMA:", error);
