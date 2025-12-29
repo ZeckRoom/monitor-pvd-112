@@ -233,7 +233,7 @@
         </button>
         
         <div class="footer">
-            <small>Actualización automática cada 10s</small>
+            <small>Actualización automática cada 5s</small>
         </div>
     </div>
     
@@ -248,7 +248,7 @@
             };
 
             actualizarPVD();
-            setInterval(() => { actualizarPVD(); }, 10000);
+            setInterval(() => { actualizarPVD(); }, 5000); // ✅ CADA 5 SEGUNDOS
           }
         });
 
@@ -273,11 +273,11 @@
               
               document.getElementById("reloj").textContent = horaFormato;
 
-              // ✅ ESCRIBIR HORA EN CELDA F12
+              // ✅ ESCRIBIR HORA EN F12: Tamaño 14, Color #808080
               cellaHora.values = [[horaFormato]];
               cellaHora.format.font.size = 14;
-              cellaHora.format.font.bold = true;
-              cellaHora.format.font.color = "#667eea";
+              cellaHora.format.font.bold = false;
+              cellaHora.format.font.color = "#808080";
               cellaHora.format.horizontalAlignment = "Center";
 
               range.format.fill.clear();
