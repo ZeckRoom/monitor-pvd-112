@@ -31,10 +31,12 @@
             font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
             background: var(--color-bg);
             color: var(--color-text);
-            overflow-x: hidden;
-            padding: 0;
-            min-height: 100vh;
+            overflow: hidden;
+            height: 100vh;
             position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         body::before {
@@ -58,20 +60,13 @@
         
         .container { 
             padding: 20px; 
-            max-width: 100%; 
+            width: 100%;
+            max-width: 400px;
             position: relative;
             z-index: 2;
-        }
-        
-        .header { 
-            text-align: left;
-            margin-bottom: 24px; 
-            padding: 16px 20px;
-            background: var(--color-surface);
-            border: 2px solid var(--color-border);
-            border-left: 4px solid var(--color-accent);
-            position: relative;
-            animation: slideIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
         }
 
         @keyframes slideIn {
@@ -91,54 +86,22 @@
             50% { opacity: 0.3; }
         }
         
-        .header h1 { 
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 18px; 
-            font-weight: 800;
-            margin-bottom: 4px; 
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            color: var(--color-accent);
-            text-shadow: 0 0 20px rgba(255, 59, 48, 0.5);
-        }
-        
-        .subtitle { 
-            font-size: 11px; 
-            color: var(--color-text-dim);
-            text-transform: uppercase;
-            letter-spacing: 3px;
-            font-weight: 500;
-        }
-
-        .status-indicator {
-            position: absolute;
-            top: 16px;
-            right: 20px;
-            width: 10px;
-            height: 10px;
-            background: var(--color-success);
-            border-radius: 50%;
-            animation: pulse 2s infinite;
-            box-shadow: 0 0 10px var(--color-success);
-        }
-        
         .reloj-container {
             background: var(--color-surface);
             border: 2px solid var(--color-border);
-            padding: 32px 20px;
-            margin-bottom: 16px;
+            padding: 24px 16px;
             position: relative;
             overflow: hidden;
-            animation: slideIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.1s backwards;
+            animation: slideIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
         .reloj-container::before {
             content: 'SYSTEM TIME';
             position: absolute;
-            top: 8px;
+            top: 6px;
             left: 12px;
             font-family: 'JetBrains Mono', monospace;
-            font-size: 9px;
+            font-size: 8px;
             font-weight: 700;
             letter-spacing: 2px;
             color: var(--color-text-dim);
@@ -156,7 +119,7 @@
         
         .reloj {
             font-family: 'JetBrains Mono', monospace;
-            font-size: 56px;
+            font-size: 48px;
             font-weight: 800;
             text-align: center;
             color: var(--color-text);
@@ -168,13 +131,12 @@
         .estado {
             background: var(--color-surface);
             border: 2px solid var(--color-border);
-            padding: 24px 20px;
-            margin-bottom: 16px;
+            padding: 20px 16px;
             text-align: center;
             font-size: 16px;
             position: relative;
             transition: all 0.3s ease;
-            animation: slideIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s backwards;
+            animation: slideIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.1s backwards;
         }
 
         .estado::before {
@@ -211,16 +173,16 @@
         }
         
         #estado-icono { 
-            font-size: 32px; 
+            font-size: 28px; 
             display: block; 
-            margin-bottom: 12px;
+            margin-bottom: 10px;
             filter: drop-shadow(0 0 10px currentColor);
         }
         
         #estado-texto { 
             font-family: 'JetBrains Mono', monospace;
             font-weight: 800;
-            font-size: 16px;
+            font-size: 15px;
             letter-spacing: 2px;
             text-transform: uppercase;
         }
@@ -239,12 +201,11 @@
             background: var(--color-surface);
             border: 2px solid var(--color-border);
             border-left: 3px solid var(--color-warning);
-            padding: 16px 20px;
-            margin-bottom: 16px;
-            font-size: 13px;
-            line-height: 1.6;
+            padding: 14px 16px;
+            font-size: 12px;
+            line-height: 1.5;
             font-family: 'JetBrains Mono', monospace;
-            animation: slideIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.3s backwards;
+            animation: slideIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s backwards;
         }
 
         .info::before {
@@ -258,9 +219,9 @@
             background: var(--color-surface);
             color: var(--color-text);
             border: 2px solid var(--color-accent);
-            padding: 16px;
+            padding: 14px;
             font-family: 'JetBrains Mono', monospace;
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 700;
             cursor: pointer;
             transition: all 0.2s ease;
@@ -268,7 +229,7 @@
             letter-spacing: 2px;
             position: relative;
             overflow: hidden;
-            animation: slideIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.4s backwards;
+            animation: slideIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.3s backwards;
         }
 
         .btn-update::before {
@@ -298,12 +259,12 @@
         
         .footer { 
             text-align: center; 
-            margin-top: 20px; 
             color: var(--color-text-dim);
             font-family: 'JetBrains Mono', monospace;
-            font-size: 10px;
+            font-size: 9px;
             text-transform: uppercase;
             letter-spacing: 2px;
+            margin-top: 4px;
         }
 
         .status-badge {
@@ -312,9 +273,9 @@
             background: rgba(255, 255, 255, 0.1);
             border: 1px solid rgba(255, 255, 255, 0.2);
             font-family: 'JetBrains Mono', monospace;
-            font-size: 10px;
+            font-size: 9px;
             font-weight: 700;
-            margin-top: 8px;
+            margin-top: 6px;
             text-transform: uppercase;
             letter-spacing: 1px;
         }
@@ -338,12 +299,6 @@
     <div class="grid-bg"></div>
     
     <div class="container">
-        <div class="header">
-            <h1>⚡ MONITOR PVD</h1>
-            <p class="subtitle">112 Illes Balears</p>
-            <div class="status-indicator"></div>
-        </div>
-        
         <div class="reloj-container">
             <div id="reloj" class="reloj">--:--:--</div>
         </div>
@@ -365,7 +320,7 @@
         </button>
         
         <div class="footer">
-            <small>SYNC: 5 SEG • MODO: AUTOMATICO</small>
+            <small>SYNC: 2 SEG • MODO: AUTOMATICO</small>
         </div>
     </div>
     
@@ -380,7 +335,7 @@
             };
 
             actualizarPVD();
-            setInterval(() => { actualizarPVD(); }, 5000);
+            setInterval(() => { actualizarPVD(); }, 2000); // ✅ CADA 2 SEGUNDOS
           }
         });
 
