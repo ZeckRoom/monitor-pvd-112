@@ -7,93 +7,204 @@
     <script src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js"></script>
     
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: #333;
-            overflow-x: hidden;
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box; 
         }
         
-        .container { padding: 20px; max-width: 400px; margin: 0 auto; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+            color: #fff;
+            overflow-x: hidden;
+            padding: 0;
+            min-height: 100vh;
+        }
         
-        .header { text-align: center; margin-bottom: 30px; color: white; }
-        .header h1 { font-size: 28px; margin-bottom: 5px; text-shadow: 2px 2px 4px rgba(0,0,0,0.2); }
-        .subtitle { font-size: 14px; opacity: 0.9; }
+        .container { 
+            padding: 24px; 
+            max-width: 100%; 
+        }
+        
+        .header { 
+            text-align: center; 
+            margin-bottom: 32px; 
+            padding-bottom: 20px;
+            border-bottom: 2px solid rgba(255,255,255,0.1);
+        }
+        
+        .header h1 { 
+            font-size: 26px; 
+            font-weight: 700;
+            margin-bottom: 8px; 
+            letter-spacing: -0.5px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .subtitle { 
+            font-size: 13px; 
+            opacity: 0.7; 
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 500;
+        }
         
         .reloj-container {
-            background: white;
-            border-radius: 15px;
-            padding: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            background: rgba(255,255,255,0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 16px;
+            padding: 28px 20px;
             margin-bottom: 20px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
         }
         
         .reloj {
-            font-size: 56px;
-            font-weight: bold;
+            font-size: 48px;
+            font-weight: 800;
             text-align: center;
-            color: #667eea;
-            font-family: 'Courier New', monospace;
-            letter-spacing: 3px;
+            color: #fff;
+            font-family: 'SF Mono', 'Monaco', 'Courier New', monospace;
+            letter-spacing: 2px;
+            text-shadow: 0 2px 20px rgba(102, 126, 234, 0.5);
         }
         
         .estado {
-            background: white;
-            border-radius: 10px;
+            background: rgba(255,255,255,0.08);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 12px;
             padding: 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            margin-bottom: 16px;
             text-align: center;
-            font-size: 18px;
-            transition: all 0.3s ease;
+            font-size: 16px;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
         }
         
-        .estado.activo { background: #FFC7CE; animation: pulse 2s infinite; }
-        .estado.descanso { background: #FFE5B4; }
-        .estado.operativo { background: #C8E6C9; }
+        .estado::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, transparent, rgba(255,255,255,0.05));
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
         
-        #estado-icono { font-size: 32px; display: block; margin-bottom: 10px; }
-        #estado-texto { font-weight: 600; }
+        .estado:hover::before {
+            opacity: 1;
+        }
+        
+        .estado.activo { 
+            background: linear-gradient(135deg, #ff6b6b, #ee5a6f);
+            border-color: rgba(255,255,255,0.3);
+            animation: pulse 2s ease-in-out infinite;
+            box-shadow: 0 8px 32px rgba(255, 107, 107, 0.4);
+        }
+        
+        .estado.descanso { 
+            background: linear-gradient(135deg, #feca57, #ff9ff3);
+            border-color: rgba(255,255,255,0.3);
+            box-shadow: 0 8px 32px rgba(254, 202, 87, 0.3);
+        }
+        
+        .estado.operativo { 
+            background: linear-gradient(135deg, #48dbfb, #0abde3);
+            border-color: rgba(255,255,255,0.3);
+            box-shadow: 0 8px 32px rgba(72, 219, 251, 0.3);
+        }
+        
+        #estado-icono { 
+            font-size: 36px; 
+            display: block; 
+            margin-bottom: 12px;
+            filter: drop-shadow(0 2px 8px rgba(0,0,0,0.3));
+        }
+        
+        #estado-texto { 
+            font-weight: 700;
+            font-size: 18px;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
         
         .info {
-            background: rgba(255,255,255,0.95);
+            background: rgba(255,255,255,0.06);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.1);
             border-radius: 10px;
-            padding: 15px;
+            padding: 16px;
             margin-bottom: 20px;
             font-size: 14px;
             text-align: center;
-            min-height: 40px;
+            min-height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1.5;
         }
         
         .btn-update {
             width: 100%;
-            background: #4CAF50;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             border: none;
-            padding: 15px;
-            font-size: 16px;
-            font-weight: bold;
-            border-radius: 8px;
+            padding: 16px;
+            font-size: 15px;
+            font-weight: 600;
+            border-radius: 10px;
             cursor: pointer;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-            transition: all 0.3s ease;
+            box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
         
         .btn-update:hover {
-            background: #45a049;
             transform: translateY(-2px);
-            box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+            box-shadow: 0 8px 30px rgba(102, 126, 234, 0.6);
         }
         
-        .btn-update:active { transform: translateY(0); }
+        .btn-update:active { 
+            transform: translateY(0); 
+            box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4);
+        }
         
-        .footer { text-align: center; margin-top: 20px; color: rgba(255,255,255,0.8); }
+        .footer { 
+            text-align: center; 
+            margin-top: 24px; 
+            color: rgba(255,255,255,0.5);
+            font-size: 12px;
+        }
         
         @keyframes pulse {
-            0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.9; transform: scale(1.02); }
+            0%, 100% { 
+                opacity: 1; 
+                transform: scale(1); 
+            }
+            50% { 
+                opacity: 0.95; 
+                transform: scale(1.02); 
+            }
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            background: rgba(255,255,255,0.2);
+            font-size: 11px;
+            font-weight: 600;
+            margin-top: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
     </style>
 </head>
@@ -114,7 +225,7 @@
         </div>
         
         <div class="info">
-            <div id="info-tiempo"></div>
+            <div id="info-tiempo">Cargando datos...</div>
         </div>
         
         <button id="force-update" class="btn-update">
@@ -129,10 +240,10 @@
     <script>
         Office.onReady((info) => {
           if (info.host === Office.HostType.Excel) {
-            console.log("Add-in cargado correctamente");
+            console.log("✅ Add-in cargado correctamente");
             
             document.getElementById("force-update").onclick = () => {
-              console.log("Actualización manual");
+              console.log("🔄 Actualización manual");
               actualizarPVD();
             };
 
@@ -146,6 +257,7 @@
             await Excel.run(async (context) => {
               const sheet = context.workbook.worksheets.getActiveWorksheet();
               const range = sheet.getRange("C4:J10");
+              const cellaHora = sheet.getRange("F12");
               
               range.load("values");
               await context.sync();
@@ -157,8 +269,16 @@
               const h = now.getHours();
               const m = now.getMinutes();
               const s = now.getSeconds();
-              document.getElementById("reloj").textContent = 
-                `${h < 10 ? '0' : ''}${h}:${m < 10 ? '0' : ''}${m}:${s < 10 ? '0' : ''}${s}`;
+              const horaFormato = `${h < 10 ? '0' : ''}${h}:${m < 10 ? '0' : ''}${m}:${s < 10 ? '0' : ''}${s}`;
+              
+              document.getElementById("reloj").textContent = horaFormato;
+
+              // ✅ ESCRIBIR HORA EN CELDA F12
+              cellaHora.values = [[horaFormato]];
+              cellaHora.format.font.size = 14;
+              cellaHora.format.font.bold = true;
+              cellaHora.format.font.color = "#667eea";
+              cellaHora.format.horizontalAlignment = "Center";
 
               range.format.fill.clear();
 
@@ -218,30 +338,31 @@
 
               if (pvdActivo !== null) {
                 estadoIcono.textContent = "🔴";
-                estadoTexto.textContent = `PVD EN CURSO`;
+                estadoTexto.innerHTML = `PVD EN CURSO<br><span class="status-badge">${pvdActivo} min restantes</span>`;
                 estadoDiv.className = "estado activo";
-                infoDiv.textContent = `Finaliza en ${pvdActivo} min`;
+                infoDiv.textContent = `El descanso PVD finalizará en ${pvdActivo} minutos`;
               } else if (descansoActivo !== null) {
                 estadoIcono.textContent = "🟠";
-                estadoTexto.textContent = `DESCANSO EN CURSO`;
+                estadoTexto.innerHTML = `DESCANSO EN CURSO<br><span class="status-badge">${descansoActivo} min restantes</span>`;
                 estadoDiv.className = "estado descanso";
-                infoDiv.textContent = `Finaliza en ${descansoActivo} min`;
+                infoDiv.textContent = `El periodo de descanso finalizará en ${descansoActivo} minutos`;
               } else {
                 estadoIcono.textContent = "✅";
-                estadoTexto.textContent = `OPERATIVO`;
+                estadoTexto.innerHTML = `OPERATIVO<br><span class="status-badge">Sin descansos activos</span>`;
                 estadoDiv.className = "estado operativo";
                 if (siguientePVD) {
                   infoDiv.textContent = `Próximo PVD: ${siguientePVD} (en ${minParaSiguiente} min)`;
                 } else {
-                  infoDiv.textContent = "Sin turnos pendientes";
+                  infoDiv.textContent = "No hay más turnos programados para hoy";
                 }
               }
 
-              console.log("Actualización OK:", new Date().toLocaleTimeString());
+              console.log("✅ Actualización completada:", new Date().toLocaleTimeString());
             });
           } catch (error) {
-            console.error("Error:", error);
-            document.getElementById("estado-texto").textContent = "❌ Error: " + error.message;
+            console.error("❌ Error:", error);
+            document.getElementById("estado-texto").textContent = "ERROR";
+            document.getElementById("info-tiempo").textContent = error.message;
           }
         }
     </script>
